@@ -10,6 +10,7 @@ const { isLoggedIn } = require('./validation/authValidator.js');
 const uploader = require('./middlewares/multerMiddleware.js');
 const cloudinary = require('./config/cloudinaryConfig.js');
 const fs = require('fs/promises');
+const productRouter = require('./routes/productRoute.js');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({extended: true}));
 app.use('/users', userRouter); // connects the router to the server
 app.use('/carts', cartRouter);
 app.use('/auth', authRouter); // for LogIn
+app.use('/products', productRouter); // for product creation
 
 app.post('/photo', uploader.single('incomingFile'), async (req, res) => {
     console.log(req.file);
