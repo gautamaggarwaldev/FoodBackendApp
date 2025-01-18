@@ -1,4 +1,5 @@
-const { findUser, createUser } = require("../repositories/userRepository");
+const { createCart } = require("../repositories/cartRepository.js");
+const { findUser, createUser } = require("../repositories/userRepository.js");
 
 async function registerUser(userDetails) {
     // It will create a brand new user in the database
@@ -27,6 +28,8 @@ async function registerUser(userDetails) {
         throw { reason: "Something went wrong, not create user", statusCode: 500 };
     }
 
+    await createCart(newUser._id);
+    
     //3. Return the details of the created user.
     return newUser;
 }

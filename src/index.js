@@ -22,7 +22,7 @@ app.use(express.urlencoded({extended: true}));
 //Routing middleware
 //if your request start from /users then handle it with userRouter
 app.use('/users', userRouter); // connects the router to the server
-app.use('/carts', cartRouter);
+app.use('/carts', cartRouter); //route for fetched the cart
 app.use('/auth', authRouter); // for LogIn
 app.use('/products', productRouter); // for product creation
 
