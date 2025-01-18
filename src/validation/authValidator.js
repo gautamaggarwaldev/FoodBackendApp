@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/serverConfig');
+const UnAuthorizedError = require('../utils/UnAuthorizedError');
 
 async function isLoggedIn(req, res, next) {
     const token = req.cookies["authToken"];
-    if(!token) {
+    if (!token) {
         return res.status(401).json({
             success: false,
             error: "Not Authenticated",
@@ -12,30 +13,57 @@ async function isLoggedIn(req, res, next) {
         });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
 
-    if(!decoded) {
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if(!decoded) {
+            throw new UnAuthorizedError();
+        }
+        // if reached here then user is authenticated allow them to access the apis
+        req.user = {
+            email: decoded.email,
+            id: decoded.id,
+            role: decoded.role
+        }
+    
+        next();
+    }
+    catch(error) {
         return res.status(400).json({
             success: false,
             data: {},
             message: "Invalid token provided",
-            error: "Not Authenticated"
+            error: error
         });
     }
+    
+}
 
 
-    // if reached here then user is authenticated allow them to access the apis
-
-    req.user = {
-        email: decoded.email,
-        id: decoded.id
+// this function checks if the authenticated user is admin or not ?
+// because we call isAdmin after isLoggedIN thats why we will receive user details
+function isAdmin(req, res, next) {
+    const loggedInUser = req.user;
+    if (loggedInUser.role === "ADMIN") {
+        next();
     }
-
-    next();
+    else {
+        return res.status(401).json({
+            success: true,
+            message: "You are not authorised for this action",
+            data: {},
+            error: {
+                reason: "Unauthorized user for this action",
+                statusCode: 401
+            }
+        })
+    }
 }
 
 module.exports = {
-    isLoggedIn
+    isLoggedIn,
+    isAdmin
 }
 
 
