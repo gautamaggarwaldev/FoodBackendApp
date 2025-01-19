@@ -20,8 +20,18 @@ async function createNewOrder(orderDetails) {
 }
 
 
-
+async function getOrderByUserId(userId) {
+    try {
+        const order = await Order.find({user: userId}).populate('items.product');
+        return order;
+    }
+    catch(error) {
+        console.log(error);
+        throw new InternalServerError();
+    }
+}
 
 module.exports = {
-    createNewOrder
+    createNewOrder,
+    getOrderByUserId,
 }
