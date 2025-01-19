@@ -1,6 +1,7 @@
 const Order = require('../schema/orderSchema.js');
 const BadRequestError = require('../utils/BadRequest.js');
 const InternalServerError = require('../utils/InternalServerError.js');
+const NotFoundError = require('../utils/NotFoundError.js');
 
 async function createNewOrder(orderDetails) {
     try {
@@ -31,7 +32,22 @@ async function getOrderByUserId(userId) {
     }
 }
 
+async function getOrderById(orderId) {
+    try {
+        const order = await Order.findById(orderId).populate('items.product');
+        if (!order) {
+            throw new NotFoundError('Order');
+        }
+        return order;
+    }
+    catch(error) {
+        console.log(error);
+        throw new InternalServerError();
+    }
+}
+
 module.exports = {
     createNewOrder,
     getOrderByUserId,
+    getOrderById,
 }

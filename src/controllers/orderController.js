@@ -1,4 +1,4 @@
-const { createOrder, getAllOrderByUserId } = require("../services/orderService.js");
+const { createOrder, getAllOrderByUserId, getOrderByOrderId } = require("../services/orderService.js");
 const AppError = require("../utils/appError.js");
 
 async function createNewOrder(req, res) {
@@ -65,7 +65,42 @@ async function getallOrdersOfUser(req, res) {
 
 
 
+async function getallOrdersByOrderId(req, res) {
+    try {
+        const order = await getOrderByOrderId(req.params.orderId);
+        console.log("Order from order id controller ", order);
+        return res.status(200).json({
+            message: "Successfully fetched the order",
+            success: true,
+            error : {},
+            data: order
+        });
+    }
+    catch(error) {
+        console.log(error);
+        if(error instanceof AppError) {
+            return res.status(error.statusCode).json({
+                message: error.message,
+                success: false,
+                error: error,
+                data: {}
+            });
+        }
+        else {
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong",
+                data: {},
+                error: error
+            });
+        }
+    }
+}
+
+
+
 module.exports = {
     createNewOrder,
     getallOrdersOfUser,
+    getallOrdersByOrderId,
 }
