@@ -31,6 +31,12 @@ const productSchema = new mongoose.Schema({
         default: 'veg'
     },
 
+    quantity: {
+        type: Number,
+        required: true,
+        default: 10
+    },
+
     inStock: {
         type: Boolean,
         required: [true, "In stock status required"],

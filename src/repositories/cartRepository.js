@@ -25,7 +25,7 @@ async function getCartByUserId(userId) {
     try {
         const cart = await Cart.findOne({
             user: userId
-        });
+        }).populate('items.product'); // mongoose joins ---> populate
         return cart;
     }
     catch(error) {
