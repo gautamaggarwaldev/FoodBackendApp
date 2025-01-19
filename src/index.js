@@ -6,10 +6,6 @@ const connectDB = require('./config/dbConfig.js');
 const userRouter = require('./routes/userRoute.js');
 const cartRouter = require('./routes/cartRoute.js');
 const authRouter = require('./routes/authRoute.js');
-const { isLoggedIn } = require('./validation/authValidator.js');
-const uploader = require('./middlewares/multerMiddleware.js');
-const cloudinary = require('./config/cloudinaryConfig.js');
-const fs = require('fs/promises');
 const productRouter = require('./routes/productRoute.js');
 const orderRouter = require('./routes/orderRoute.js');
 
@@ -28,17 +24,9 @@ app.use('/auth', authRouter); // for LogIn
 app.use('/products', productRouter); // for product creation
 app.use('/orders', orderRouter); // for orders
 
-app.post('/photo', uploader.single('incomingFile'), async (req, res) => {
-    console.log(req.file);
-    const result = await cloudinary.uploader.upload(req.file.path);
-    console.log("Result from cloudinary ", result);
-    await fs.unlink(req.file.path); //delete file from uploads folder
-    return res.status(200).json({message: "OK"});
-})
 
-app.get('/ping', isLoggedIn ,(req, res) => {
-    console.log(req.body);
-    console.log(req.cookies);
+
+app.get('/ping' ,(req, res) => {
     return res.json({message: "pong"})
 });
 
