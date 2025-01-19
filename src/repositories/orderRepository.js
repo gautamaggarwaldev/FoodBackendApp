@@ -46,8 +46,22 @@ async function getOrderById(orderId) {
     }
 }
 
+
+async function updateOrderStatus(orderId, status) {
+    try {
+        const order = Order.findByIdAndUpdate(orderId, {status: status}, {new : true});
+        console.log(order);
+        return order;
+    }
+    catch(error) {
+        console.log(error);
+        throw new InternalServerError();
+    }
+}
+
 module.exports = {
     createNewOrder,
     getOrderByUserId,
     getOrderById,
+    updateOrderStatus
 }

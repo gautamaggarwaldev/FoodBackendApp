@@ -1,5 +1,5 @@
 const { getCartByUserId, clearCart } = require('../repositories/cartRepository.js');
-const { createNewOrder, getOrderByUserId, getOrderById } = require('../repositories/orderRepository.js');
+const { createNewOrder, getOrderByUserId, getOrderById, updateOrderStatus } = require('../repositories/orderRepository.js');
 const { findUser } = require('../repositories/userRepository.js');
 const BadRequestError = require('../utils/BadRequest');
 const InternalServerError = require('../utils/InternalServerError');
@@ -8,15 +8,15 @@ const NotFoundError = require('../utils/NotFoundError.js');
 async function createOrder(userId, paymentMethod) {
 
     const cart = await getCartByUserId(userId);
-    const user = await findUser({_id: cart.user});
+    const user = await findUser({ _id: cart.user });
     console.log(cart);
     console.log(user);
 
-    if(!cart) {
+    if (!cart) {
         throw new NotFoundError("Cart");
     }
 
-    if(cart.items.length === 0) {
+    if (cart.items.length === 0) {
         throw new BadRequestError(["Cart is empty, please add some items to the cart"]);
     }
 
@@ -25,7 +25,7 @@ async function createOrder(userId, paymentMethod) {
     orderObject.user = cart.user;
     orderObject.items = cart.items.map(cartitem => {
         return {
-            product: cartitem.product._id, 
+            product: cartitem.product._id,
             quantity: cartitem.quantity
         }
     });
@@ -43,7 +43,7 @@ async function createOrder(userId, paymentMethod) {
 
     const order = await createNewOrder(orderObject); //
 
-    if(!order) {
+    if (!order) {
         throw new InternalServerError();
     }
 
@@ -55,7 +55,7 @@ async function createOrder(userId, paymentMethod) {
 
 async function getAllOrderByUserId(userId) {
     const orders = await getOrderByUserId(userId);
-    if(!orders) {
+    if (!orders) {
         throw NotFoundError('Orders');
     }
     return orders;
@@ -64,14 +64,23 @@ async function getAllOrderByUserId(userId) {
 
 async function getOrderByOrderId(orderId) {
     const orders = await getOrderById(orderId);
-    if(!orders) {
+    if (!orders) {
         throw new NotFoundError('Order');
     }
     return orders;
-} 
+}
+
+async function updateOrder(orderId, status) {
+    const order = await updateOrderStatus(orderId, status);
+    if (!order) {
+        throw new NotFoundError("Orders");
+    }
+    return order;
+}
 
 module.exports = {
     createOrder,
     getAllOrderByUserId,
     getOrderByOrderId,
+    updateOrder
 }

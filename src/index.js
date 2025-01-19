@@ -26,7 +26,7 @@ app.use('/users', userRouter); // connects the router to the server
 app.use('/carts', cartRouter); //route for fetched the cart
 app.use('/auth', authRouter); // for LogIn
 app.use('/products', productRouter); // for product creation
-app.use('/orders', orderRouter);
+app.use('/orders', orderRouter); // for orders
 
 app.post('/photo', uploader.single('incomingFile'), async (req, res) => {
     console.log(req.file);
